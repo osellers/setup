@@ -20,3 +20,6 @@ nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 
 # install python language server
 pip install -U jedi-language-server
+
+# install ripgrep for telescope
+sudo apt-get install ripgrep
