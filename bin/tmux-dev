@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 # tmux-dev [path]
 #
-# Create (or re-attach to) a tmux dev session for a repo, with three windows:
-#   1. claude  -> runs `claude` (Claude Code)
-#   2. nvim    -> runs `nvim .`
-#   3. term    -> a plain shell
+# Create (or re-attach to) a tmux dev session for a repo. A single window is
+# split into three panes:
+#
+#   +-------------+-----------+
+#   |             |  claude   |   left  = nvim .   (60% width)
+#   |    nvim     +-----------+   t-rgt = claude    (Claude Code)
+#   |             | terminal  |   b-rgt = plain fish shell
+#   +-------------+-----------+
 #
 # The session is named after the repo directory, so running the command again
 # (e.g. after an SSH reconnect) re-attaches to the same session instead of
@@ -26,12 +30,16 @@ dir="$(cd "$dir" && pwd)"
 name="$(basename "$dir" | tr ' .:' '___')"
 
 if ! tmux has-session -t "=$name" 2>/dev/null; then
-  tmux new-session  -d -s "$name" -c "$dir" -n claude
-  tmux send-keys    -t "$name:claude" 'claude' C-m
-  tmux new-window   -t "$name" -c "$dir" -n nvim
-  tmux send-keys    -t "$name:nvim" 'nvim .' C-m
-  tmux new-window   -t "$name" -c "$dir" -n term
-  tmux select-window -t "$name:claude"
+  # Left pane (0): nvim
+  tmux new-session -d -s "$name" -c "$dir" -n dev
+  tmux send-keys   -t "$name:dev.0" 'nvim .' C-m
+  # Right column (1): split off 40% width, run claude on top
+  tmux split-window -h -l 40% -t "$name:dev.0" -c "$dir"
+  tmux send-keys    -t "$name:dev.1" 'claude' C-m
+  # Bottom-right (2): split the right column in half, leave a plain shell
+  tmux split-window -v -l 50% -t "$name:dev.1" -c "$dir"
+  # Start focused on nvim
+  tmux select-pane  -t "$name:dev.0"
 fi
 
 if [ -n "${TMUX:-}" ]; then
