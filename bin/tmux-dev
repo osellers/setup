@@ -4,11 +4,11 @@
 # Create (or re-attach to) a tmux dev session for a repo. A single window is
 # split into three panes:
 #
-#   +-------------+-----------+
-#   |             |  claude   |   left  = nvim .   (60% width)
-#   |    nvim     +-----------+   t-rgt = claude    (Claude Code)
-#   |             | terminal  |   b-rgt = plain fish shell
-#   +-------------+-----------+
+#   +----------+--------------+
+#   |          |    claude    |   left  = nvim .   (45% width)
+#   |   nvim   +--------------+   t-rgt = claude    (60% of right column)
+#   |          |  terminal    |   b-rgt = plain fish shell (40%)
+#   +----------+--------------+
 #
 # The session is named after the repo directory, so running the command again
 # (e.g. after an SSH reconnect) re-attaches to the same session instead of
@@ -33,11 +33,12 @@ if ! tmux has-session -t "=$name" 2>/dev/null; then
   # Left pane (0): nvim
   tmux new-session -d -s "$name" -c "$dir" -n dev
   tmux send-keys   -t "$name:dev.0" 'nvim .' C-m
-  # Right column (1): split off 40% width, run claude on top
-  tmux split-window -h -l 40% -t "$name:dev.0" -c "$dir"
+  # Right column (1): take 55% width so the left (nvim) pane stays smaller,
+  # run claude on top
+  tmux split-window -h -l 55% -t "$name:dev.0" -c "$dir"
   tmux send-keys    -t "$name:dev.1" 'claude' C-m
-  # Bottom-right (2): split the right column in half, leave a plain shell
-  tmux split-window -v -l 50% -t "$name:dev.1" -c "$dir"
+  # Bottom-right (2): give it 40% so the top (claude) pane is bigger
+  tmux split-window -v -l 40% -t "$name:dev.1" -c "$dir"
   # Start focused on nvim
   tmux select-pane  -t "$name:dev.0"
 fi
