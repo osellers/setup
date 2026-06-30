@@ -8,8 +8,10 @@ fish_path=$(which fish)
 chsh -s "$fish_path"
 
 # configure fish
-fish -c conda init fish
 fish -c fish_add_path /opt/homebrew/bin
+
+# install uv (python package/environment manager)
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # setup nvim
 # apt only ships neovim 0.6.1, too old for this config (needs 0.8+).
@@ -28,7 +30,7 @@ git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvi
 ~/.local/bin/nvim --headless -c 'autocmd User PackerComplete quitall' -c 'PackerSync'
 
 # install python language server
-pip install -U jedi-language-server
+uv tool install jedi-language-server
 
 # install ripgrep for telescope
 sudo apt-get install ripgrep
