@@ -5,14 +5,11 @@
 -- Reserve a space in the gutter
 vim.opt.signcolumn = 'yes'
 
--- Add cmp_nvim_lsp capabilities settings to lspconfig
--- This should be executed before you configure any language server
-local lspconfig_defaults = require('lspconfig').util.default_config
-lspconfig_defaults.capabilities = vim.tbl_deep_extend(
-  'force',
-  lspconfig_defaults.capabilities,
-  require('cmp_nvim_lsp').default_capabilities()
-)
+-- Add cmp_nvim_lsp capabilities settings for all language servers
+-- This should be executed before you enable any language server
+vim.lsp.config('*', {
+  capabilities = require('cmp_nvim_lsp').default_capabilities(),
+})
 
 -- This is where you enable features that only work
 -- if there is a language server active in the file
@@ -37,9 +34,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 -- You'll find a list of language servers here:
 -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
 -- These are example language servers. 
-require('lspconfig').zls.setup({})
-require('lspconfig').lua_ls.setup({})
-require('lspconfig').jedi_language_server.setup({})
+vim.lsp.enable({ 'zls', 'lua_ls', 'jedi_language_server' })
 local cmp = require('cmp')
 
 cmp.setup({
