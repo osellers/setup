@@ -37,6 +37,8 @@ sudo apt-get install ripgrep
 
 # install tmux
 sudo apt-get install tmux
+mkdir -p ~/.config/tmux
+cp ./tmux/tmux.conf ~/.config/tmux/tmux.conf
 
 # install claude code (native installer)
 curl -fsSL https://claude.ai/install.sh | bash

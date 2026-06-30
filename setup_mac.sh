@@ -27,6 +27,8 @@ brew install ripgrep
 
 # install tmux
 brew install tmux
+mkdir -p ~/.config/tmux
+cp ./tmux/tmux.conf ~/.config/tmux/tmux.conf
 
 # install claude code (native installer)
 curl -fsSL https://claude.ai/install.sh | bash
