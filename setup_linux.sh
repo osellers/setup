@@ -32,3 +32,13 @@ pip install -U jedi-language-server
 
 # install ripgrep for telescope
 sudo apt-get install ripgrep
+
+# install tmux
+sudo apt-get install tmux
+
+# install claude code (native installer)
+curl -fsSL https://claude.ai/install.sh | bash
+
+# install the tmux-dev session helper (claude/nvim/term windows per repo)
+mkdir -p ~/.local/bin
+ln -sf "$(pwd)/bin/tmux-dev" ~/.local/bin/tmux-dev

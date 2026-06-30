@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# tmux-dev [path]
+#
+# Create (or re-attach to) a tmux dev session for a repo, with three windows:
+#   1. claude  -> runs `claude` (Claude Code)
+#   2. nvim    -> runs `nvim .`
+#   3. term    -> a plain shell
+#
+# The session is named after the repo directory, so running the command again
+# (e.g. after an SSH reconnect) re-attaches to the same session instead of
+# making a new one. Works whether or not you're already inside tmux.
+#
+# Usage:
+#   tmux-dev               # use the current directory
+#   tmux-dev ~/code/foo    # use a specific repo
+set -euo pipefail
+
+dir="${1:-$PWD}"
+if [ ! -d "$dir" ]; then
+  echo "tmux-dev: not a directory: $dir" >&2
+  exit 1
+fi
+dir="$(cd "$dir" && pwd)"
+
+# tmux session names can't contain '.' or ':'; sanitize the repo basename.
+name="$(basename "$dir" | tr ' .:' '___')"
+
+if ! tmux has-session -t "=$name" 2>/dev/null; then
+  tmux new-session  -d -s "$name" -c "$dir" -n claude
+  tmux send-keys    -t "$name:claude" 'claude' C-m
+  tmux new-window   -t "$name" -c "$dir" -n nvim
+  tmux send-keys    -t "$name:nvim" 'nvim .' C-m
+  tmux new-window   -t "$name" -c "$dir" -n term
+  tmux select-window -t "$name:claude"
+fi
+
+if [ -n "${TMUX:-}" ]; then
+  tmux switch-client -t "$name"
+else
+  tmux attach-session -t "$name"
+fi
