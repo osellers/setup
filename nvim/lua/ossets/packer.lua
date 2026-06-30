@@ -27,6 +27,7 @@ return require('packer').startup(function(use)
   use {
       "tpope/vim-fugitive"
   }
+  use('lewis6991/gitsigns.nvim')
   use({
       "NTBBloodbath/zig-tools.nvim",
       -- Load zig-tools.nvim only in Zig buffers
